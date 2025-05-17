@@ -1,0 +1,13 @@
+# Ignore virtual environments
+venv/
+.env/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Streamlit cache and other junk
+.streamlit/config.toml
+/.ipynb_checkpoints
+/.vscode/
+
+models/
