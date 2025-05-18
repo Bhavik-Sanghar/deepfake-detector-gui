@@ -8,12 +8,8 @@ from utils.image_utils import load_and_preprocess_image
 from utils.ensemble import EnsembleModel
 from utils.gramnet_utils import gram_matrix  # needed for custom loading
 
-import gdown
+from huggingface_hub import hf_hub_download
 import os
-
-def download_if_not_exists(url, output_path):
-    if not os.path.exists(output_path):
-        gdown.download(url, output_path, quiet=False)
 
 
 # ----------------------------
@@ -37,24 +33,16 @@ with open("static/style.css") as f:
 # ----------------------------
 @st.cache_resource
 def load_models():
-    # Google Drive file URLs (use direct links or file IDs with gdown)
-    densenet_url = "https://drive.google.com/uc?id=FILE_ID_1"
-    resnet_url   = "https://drive.google.com/uc?id=FILE_ID_2"
-    gramnet_url  = "https://drive.google.com/uc?id=FILE_ID_3"
-    cooccur_url  = "https://drive.google.com/uc?id=FILE_ID_4"
+    densenet_path = hf_hub_download(repo_id="Bhavik-Sanghar/Deepfake-model", filename="best_densenet_model.keras")
+    resnet_path   = hf_hub_download(repo_id="Bhavik-Sanghar/Deepfake-model", filename="best_resnet_model.keras")
+    gramnet_path  = hf_hub_download(repo_id="Bhavik-Sanghar/Deepfake-model", filename="best_gramnet_model.keras")
+    cooccur_path  = hf_hub_download(repo_id="Bhavik-Sanghar/Deepfake-model", filename="best_cooccurrence_model.keras")
 
-    # Download if not already there
-    download_if_not_exists(densenet_url, "models/best_densenet_model.keras")
-    download_if_not_exists(resnet_url,   "models/best_resnet_model.keras")
-    download_if_not_exists(gramnet_url,  "models/best_gramnet_model.keras")
-    download_if_not_exists(cooccur_url,  "models/best_cooccurrence_model.keras")
+    densenet = tf.keras.models.load_model(densenet_path)
+    resnet   = tf.keras.models.load_model(resnet_path)
+    gramnet  = tf.keras.models.load_model(gramnet_path, custom_objects={"gram_matrix": gram_matrix})
+    cooccur  = tf.keras.models.load_model(cooccur_path)
 
-    # Load models
-    from utils.gramnet_utils import gram_matrix
-    densenet = tf.keras.models.load_model("models/best_densenet_model.keras")
-    resnet   = tf.keras.models.load_model("models/best_resnet_model.keras")
-    gramnet  = tf.keras.models.load_model("models/best_gramnet_model.keras", custom_objects={"gram_matrix": gram_matrix})
-    cooccur  = tf.keras.models.load_model("models/best_cooccurrence_model.keras")
 
     return [resnet, densenet, gramnet, cooccur]
 
