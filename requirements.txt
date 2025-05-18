@@ -6,3 +6,5 @@ Pillow
 matplotlib
 gdown
 huggingface_hub
+scikit-learn
+seaborn 
